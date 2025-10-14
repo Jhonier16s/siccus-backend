@@ -1,11 +1,36 @@
-{    
-        "symbols.folders.associations": {
-          "prisma": "folder-database",
-          "users": "folder-user"
-        },
-        "symbols.files.associations": {
-          "*.module.ts": "nest-module",
-          "*.service.ts": "nest-service",
-          "*.controller.ts": "nest-controller",
-        }          
+{
+  // NOTE: the original keys `symbols.*.associations` are not standard VS Code settings
+  // and are ignored by VS Code / icon theme extensions. Keep them for reference but
+  // also add mappings for popular icon extensions so associations work when they are installed.
+  "symbols.folders.associations": {
+    "prisma": "folder-database",
+    "users": "folder-user"
+  },
+  "symbols.files.associations": {
+    "*.module.ts": "nest-module",
+    "*.service.ts": "nest-service",
+    "*.controller.ts": "nest-controller"
+  },
+
+  // Material Icon Theme mappings
+  "material-icon-theme.files.associations": {
+    "*.module.ts": "module",
+    "*.service.ts": "service",
+    "*.controller.ts": "controller"
+  },
+  "material-icon-theme.folders.associations": {
+    "prisma": "database",
+    "users": "user"
+  },
+
+  // vscode-icons mappings (array form expected by the extension)
+  "vsicons.associations.files": [
+    { "icon": "module", "extensions": ["module.ts"] },
+    { "icon": "service", "extensions": ["service.ts"] },
+    { "icon": "controller", "extensions": ["controller.ts"] }
+  ],
+  "vsicons.associations.folders": [
+    { "icon": "database", "extensions": ["prisma"] },
+    { "icon": "user", "extensions": ["users"] }
+  ]
 }
