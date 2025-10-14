@@ -1,0 +1,11 @@
+{    
+        "symbols.folders.associations": {
+          "prisma": "folder-database",
+          "users": "folder-user"
+        },
+        "symbols.files.associations": {
+          "*.module.ts": "nest-module",
+          "*.service.ts": "nest-service",
+          "*.controller.ts": "nest-controller",
+        }          
+}

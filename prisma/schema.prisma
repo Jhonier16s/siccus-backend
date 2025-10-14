@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id_usuario     Int               @id @default(autoincrement())
+  nombre         String
+  email          String            @unique
+  telefono       String?
+  contrasena     String
+  rol            String            @default("usuario")
+  fecha_registro DateTime          @default(now())
+
+  // Relaciones
+  perfil_salud   PerfilSalud?
+  progreso       Progreso[]
+  actividades    Actividad[]
+  recordatorios  Recordatorio[]
+  logrosUsuario  LogroUsuario[]
+  configuracion  Configuracion?
+
+  @@map("usuarios")
+}
+
+model PerfilSalud {
+  id_perfil      Int       @id @default(autoincrement())
+  id_usuario     Int       @unique
+  edad           Int?
+  peso           Decimal?
+  altura         Decimal?
+  objetivo       String?
+  imc            Decimal?
+  fecha_creacion DateTime  @default(now())
+
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+
+  @@map("perfil_salud")
+}
+
+model Progreso {
+  id_progreso Int      @id @default(autoincrement())
+  id_usuario  Int
+  xp          Int       @default(0)
+  energia     Int       @default(0)
+  salud       Int       @default(0)
+  nivel       Int       @default(1)
+  fecha       DateTime  @default(now())
+
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+
+  @@map("progreso")
+}
+
+model Ejercicio {
+  id_ejercicio Int        @id @default(autoincrement())
+  nombre       String
+  descripcion  String?
+  met          Decimal?
+
+  actividades  Actividad[]
+
+  @@map("ejercicios")
+}
+
+model Actividad {
+  id_actividad       Int      @id @default(autoincrement())
+  id_usuario         Int
+  id_ejercicio       Int
+  duracion_min       Int
+  calorias_quemadas  Decimal?
+  fecha              DateTime @default(now())
+
+  usuario    Usuario   @relation(fields: [id_usuario], references: [id_usuario])
+  ejercicio  Ejercicio @relation(fields: [id_ejercicio], references: [id_ejercicio])
+
+  @@map("actividades")
+}
+
+model Recordatorio {
+  id_recordatorio Int      @id @default(autoincrement())
+  id_usuario      Int
+  tipo            String
+  mensaje         String
+  hora            DateTime
+  activo          Boolean  @default(true)
+
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+
+  // ⚠️ Por ahora no implementaremos notificaciones push
+  // esto se puede integrar en el futuro con Firebase o WebSockets.
+
+  @@map("recordatorios")
+}
+
+model Logro {
+  id_logro    Int             @id @default(autoincrement())
+  nombre      String
+  descripcion String
+  puntos_xp   Int
+  icono       String?
+
+  usuarios LogroUsuario[]
+
+  @@map("logros")
+}
+
+model LogroUsuario {
+  id_logro_usuario Int      @id @default(autoincrement())
+  id_usuario       Int
+  id_logro         Int
+  fecha_obtenido   DateTime @default(now())
+
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+  logro   Logro   @relation(fields: [id_logro], references: [id_logro])
+
+  @@map("logros_usuario")
+}
+
+model Configuracion {
+  id_config       Int      @id @default(autoincrement())
+  id_usuario      Int      @unique
+  idioma          String   @default("es")
+  tema            String   @default("claro")
+  notificaciones  Boolean  @default(true)
+
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+
+  // 🔕 Por ahora el sistema de notificaciones es parte del MVP futuro.
+
+  @@map("configuraciones")
+}
