@@ -55,6 +55,22 @@ export class UsersService {
       },
     });
   }
+
+  async findOneByUsername(email: string) {
+    // Incluye la contraseña para validación de login
+    return this.prisma.usuario.findUnique({
+      where: { email },
+      select: {
+        id_usuario: true,
+        nombre: true,
+        email: true,
+        telefono: true,
+        rol: true,
+        fecha_registro: true,
+        contrasena: true,
+      },
+    });
+  }
   async update(id: number, dto: UpdateUserDto) {
     const data: any = { ...dto };
 
