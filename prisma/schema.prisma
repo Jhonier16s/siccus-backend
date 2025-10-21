@@ -15,6 +15,7 @@ model Usuario {
   contrasena     String
   rol            String            @default("usuario")
   fecha_registro DateTime          @default(now())
+  avatarUrl      String?          @map("avatar_url")
 
   // Relaciones
   perfil_salud   PerfilSalud?
