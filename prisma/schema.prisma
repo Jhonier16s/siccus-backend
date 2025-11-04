@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Estado por usuario de una misión
+enum MisionEstado {
+  PENDIENTE
+  EN_PROGRESO
+  COMPLETADA
+}
+
 model Usuario {
   id_usuario     Int               @id @default(autoincrement())
   nombre         String
@@ -24,6 +31,7 @@ model Usuario {
   recordatorios  Recordatorio[]
   logrosUsuario  LogroUsuario[]
   configuracion  Configuracion?
+  misionesUsuario MisionUsuario[]
 
   @@map("usuarios")
 }
@@ -134,4 +142,35 @@ model Configuracion {
   // 🔕 Por ahora el sistema de notificaciones es parte del MVP futuro.
 
   @@map("configuraciones")
+}
+
+// Misiones del sistema (catálogo)
+model Mision {
+  id_mision   Int    @id @default(autoincrement())
+  nombre      String
+  descripcion String
+  completada  Boolean @default(false)
+  xp          Int     @default(0)
+  bloqueada   Boolean @default(false)
+
+  usuarios MisionUsuario[]
+
+  @@map("misiones")
+}
+
+// Relación N-M Usuario <-> Mision con estado por usuario
+model MisionUsuario {
+  id_mision_usuario Int           @id @default(autoincrement())
+  id_usuario        Int
+  id_mision         Int
+  estado            MisionEstado  @default(PENDIENTE)
+  progreso          Int?          @default(0)
+  fecha_asignacion  DateTime      @default(now())
+  completada_at     DateTime?
+
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+  mision  Mision  @relation(fields: [id_mision], references: [id_mision])
+
+  @@unique([id_usuario, id_mision])
+  @@map("misiones_usuario")
 }
