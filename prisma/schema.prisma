@@ -23,6 +23,7 @@ model Usuario {
   rol            String            @default("usuario")
   fecha_registro DateTime          @default(now())
   avatarUrl      String?          @map("avatar_url")
+  onboardingCompleto Boolean          @default(false) @map("onboarding_completo")
 
   // Relaciones
   perfil_salud   PerfilSalud?
