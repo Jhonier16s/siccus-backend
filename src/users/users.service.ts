@@ -90,6 +90,7 @@ export class UsersService {
         fecha_registro: true,
         contrasena: true,
         avatarUrl: true,
+        onboardingCompleto: true
       },
     });
   }
