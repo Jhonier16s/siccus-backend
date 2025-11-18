@@ -46,6 +46,9 @@ model PerfilSalud {
   objetivo       String?
   imc            Decimal?
   fecha_creacion DateTime  @default(now())
+  antecedenteSobrepeso Int? @map("antecedente_sobrepeso")
+  aguaCh20A       Int?      @map("agua_ch20_a")
+  nivelActividad  Int?      @map("nivel_actividad")
 
   usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
 

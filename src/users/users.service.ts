@@ -17,7 +17,7 @@ export class UsersService {
     if (exists) {
       throw new ConflictException('El email ya está registrado');
     }
-
+    let defaultAvatar = "https://models.readyplayer.me/690a70674f27e069d91fccdd.glb"
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     try {
       const user = await this.prisma.usuario.create({
@@ -27,7 +27,7 @@ export class UsersService {
           telefono: dto.phone,
           contrasena: hashedPassword,
           rol: dto.role ?? 'usuario',
-          avatarUrl: dto.avatarUrl,
+          avatarUrl: dto?.avatarUrl ?? defaultAvatar,
         },
         select: {
           id_usuario: true,
