@@ -90,7 +90,12 @@ export class UsersService {
         fecha_registro: true,
         contrasena: true,
         avatarUrl: true,
-        onboardingCompleto: true
+        onboardingCompleto: true,
+        perfil_salud: {
+          select: {
+            perfilModelo: true,
+          },
+        },
       },
     });
   }

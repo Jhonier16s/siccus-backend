@@ -23,6 +23,15 @@ export class AuthService {
     }
     const payload = { sub: user.id_usuario, email: user.email, role: user.rol };
     const access_token = await this.jwtService.signAsync(payload);
-    return { success: true, access_token, user };
+    
+    // Extract perfilModelo from nested perfil_salud if available
+    const perfilModelo = user.perfil_salud?.perfilModelo ?? null;
+    const { perfil_salud, ...userWithoutPerfil } = user;
+    
+    return { 
+      success: true, 
+      access_token, 
+      user: { ...userWithoutPerfil, perfilModelo } 
+    };
   }
 }

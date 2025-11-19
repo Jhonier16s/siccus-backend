@@ -31,7 +31,24 @@ export class PerfilSaludService {
 
   async upsert(dto: CreatePerfilSaludDto) {
     const imc = dto.imc ?? this.computeImc(dto.peso ?? null, dto.altura ?? null);
-    let shouldCallModel = false;
+    
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { id_usuario: dto.idUsuario },
+      select: { onboardingCompleto: true },
+    });
+
+    const shouldCallModel = usuario && !usuario.onboardingCompleto;
+    let modelData = null;
+
+    if (shouldCallModel) {
+      const payload = this.buildModelPayload(dto, null);
+      if (payload) {
+        modelData = await this.requestPrediction(payload);
+      } else {
+        this.logger.warn('Skipping model request due to missing fields in payload');
+      }
+    }
+
     const perfil = await this.prisma.$transaction(async (tx) => {
       const perfil = await tx.perfilSalud.upsert({
         where: { id_usuario: dto.idUsuario },
@@ -45,6 +62,7 @@ export class PerfilSaludService {
           antecedenteSobrepeso: dto.antecedenteSobrepeso,
           aguaCh20A: dto.aguaCh20A,
           nivelActividad: dto.nivelActividad,
+          perfilModelo: modelData ? modelData : undefined,
         },
         update: {
           edad: dto.edad,
@@ -67,17 +85,12 @@ export class PerfilSaludService {
           antecedenteSobrepeso: true,
           aguaCh20A: true,
           nivelActividad: true,
+          perfilModelo: true,
           fecha_creacion: true,
         },
       });
       
-      const usuario = await tx.usuario.findUnique({
-        where: { id_usuario: dto.idUsuario },
-        select: { onboardingCompleto: true },
-      });
-
-      if (usuario && !usuario.onboardingCompleto) {
-        shouldCallModel = true;
+      if (shouldCallModel) {
         await tx.usuario.update({
           where: { id_usuario: dto.idUsuario },
           data: { onboardingCompleto: true },
@@ -88,18 +101,7 @@ export class PerfilSaludService {
       return perfil;
     });
 
-    if (!shouldCallModel) {
-      return { ...perfil, dataModel: null };
-    }
-
-    const payload = this.buildModelPayload(dto, perfil);
-    if (!payload) {
-      this.logger.warn('Skipping model request due to missing fields in payload');
-      return { ...perfil, dataModel: null };
-    }
-
-    const dataModel = await this.requestPrediction(payload);
-    return { ...perfil, dataModel };
+    return perfil;
   }
 
   async findByUserId(idUsuario: number) {
@@ -116,6 +118,7 @@ export class PerfilSaludService {
         antecedenteSobrepeso: true,
         aguaCh20A: true,
         nivelActividad: true,
+        perfilModelo: true,
         fecha_creacion: true,
       },
     });
@@ -149,6 +152,7 @@ export class PerfilSaludService {
           antecedenteSobrepeso: true,
           aguaCh20A: true,
           nivelActividad: true,
+          perfilModelo: true,
           fecha_creacion: true,
         },
       });

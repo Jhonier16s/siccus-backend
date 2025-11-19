@@ -24,6 +24,7 @@ model Usuario {
   fecha_registro DateTime          @default(now())
   avatarUrl      String?          @map("avatar_url")
   onboardingCompleto Boolean          @default(false) @map("onboarding_completo")
+  perfilModelo String?          @map("perfil_modelo")
 
   // Relaciones
   perfil_salud   PerfilSalud?
@@ -49,6 +50,7 @@ model PerfilSalud {
   antecedenteSobrepeso Int? @map("antecedente_sobrepeso")
   aguaCh20A       Int?      @map("agua_ch20_a")
   nivelActividad  Int?      @map("nivel_actividad")
+  perfilModelo    Json?     @map("perfil_modelo")
 
   usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
 
