@@ -13,7 +13,6 @@ export class LogrosService {
         nombre: dto.nombre,
         descripcion: dto.descripcion,
         puntos_xp: dto.puntosXp,
-        // icono: dto.icono (no se envía por ahora)
       },
       select: {
         id_logro: true,
@@ -50,7 +49,6 @@ export class LogrosService {
           nombre: dto.nombre,
           descripcion: dto.descripcion,
           puntos_xp: dto.puntosXp,
-          // icono: dto.icono (no se envía por ahora)
         },
         select: { id_logro: true, nombre: true, descripcion: true, puntos_xp: true, icono: true },
       });
@@ -66,5 +64,13 @@ export class LogrosService {
     } catch (e) {
       throw new NotFoundException('Logro no encontrado');
     }
+  }
+
+  // ⭐ OBTENER LOGROS DE UN USUARIO CON RELACIONES
+  async obtenerLogrosDeUsuario(idUsuario: number) {
+    return this.prisma.logroUsuario.findMany({
+      where: { id_usuario: idUsuario },
+      include: { logro: true }, // Incluye los datos completos del logro
+    });
   }
 }
